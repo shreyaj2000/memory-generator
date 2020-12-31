@@ -1,5 +1,4 @@
-import pygame
-from moviepy.editor import *
+import pyglet
 import os, random
 import json
 
@@ -7,7 +6,6 @@ import json
 # initialize screen
 screenWidth = 2000
 screenHeight = 1000
-
 
 
 def countVideosPlayed(videosPlayed):
@@ -51,19 +49,31 @@ def getVideo():
 
     return randomVideoDir
 
-def main():
-    win = pygame.display.set_mode((screenWidth,screenHeight))
-
-    randomVideo = getVideo()
-
-    pygame.display.set_caption("Memory Generator")
-    clip = VideoFileClip('videos/' + randomVideo)
-    clip.resize(width = 1000, height = 600)
-    clip.preview()
-
-    pygame.quit()
 
 
+# size configurations
+window = pyglet.window.Window(resizable=True)  
+window.set_size(1000,800)  
+window.set_caption('Memory Generator') 
 
-if __name__ == "__main__":
-    main()
+randomVideo = getVideo()
+
+# get video
+vidPath = 'videos/' + randomVideo
+player = pyglet.media.Player()
+source = pyglet.media.StreamingSource()
+MediaLoad = pyglet.media.load(vidPath)
+player.queue(MediaLoad)
+myWidth = player.source.video_format.width*0.7 
+myHeight = player.source.video_format.height*0.7
+
+player.play()
+
+
+@window.event
+def on_draw():
+    if player.source and player.source.video_format:
+        player.get_texture().blit(100,100,width=myWidth,height=myHeight)
+
+
+pyglet.app.run()
